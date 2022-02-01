@@ -1,0 +1,809 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+	<mapper namespace="com.melchi.external.module.prod.dao.ProdControlDAO">
+	
+		<!-- 상품 등록 -->
+		<insert id="setProdInfoInsert" parameterType="com.melchi.external.module.prod.model.ProdInfo">
+		/* Prod.xml-setProdInfoInsert */
+		INSERT INTO MH_PRODUCT (
+			CATECD,
+			SELLERCD,
+			STATUS,
+			PRODUCTNAME,
+			PRODUCTVIEWCD,
+			SELLERPRODUCTCD,
+			MANUFACNAME,
+			ORIGINNAME,
+			ISORIGINNAMEDETAILREF,
+			BRANDNAME,
+			AUTHOR,
+			ISBN,
+			ISADULTAUTH,
+			SALEDISPLAYTYPE,
+			ISTAXED,
+			HEALTHSALESPERNUM,        
+			MEDICALSALESPERNUM,
+			SELLINGPRICE,
+			PRDQTY,
+			ISUSEDPRODUCTOPTION,
+			SHIPPOLICY_NO,
+			SHIPPINGMETHOD,
+			SHIPPINGFEETYPE,
+			SHIPPINGFEE,
+			ADDITIONALSHIPPINGFEE,
+			SHIPPINGFEEPAYTYPE,
+			FREESHIPPINGAMOUNT,
+			RETURNSHIPPINGFEE,
+			CHANGESHIPPINGFEE,
+			SALELIMITCNT,
+			CONTENTS,
+			OVERSEAS_GOODS_SALES_YN,
+			STARTDATEDUE,
+			ENDDATEDUE,
+			IMGPATHA,
+			IMGPATHB,
+			IMGPATHC,
+			REGDATE,
+			APIINDEXING
+		) VALUES (
+			#{prodInfo.catecd},
+			#{prodInfo.sellercd},
+			#{prodInfo.status},
+			#{prodInfo.productname},
+			#{prodInfo.productviewcd},
+			#{prodInfo.sellerproductcd},
+			#{prodInfo.manufacname},
+			#{prodInfo.originname},
+			#{prodInfo.isoriginnamedetailref},
+			#{prodInfo.brandname},
+			#{prodInfo.author},
+			#{prodInfo.isbn},
+			#{prodInfo.isadultauth},
+			#{prodInfo.saledisplaytype},
+			#{prodInfo.istaxed},
+			#{prodInfo.healthsalespernum},        
+			#{prodInfo.medicalsalespernum},
+			#{prodInfo.sellingprice},
+			#{prodInfo.prdqty},
+			#{prodInfo.isusedproductoption},
+			#{prodInfo.shippolicy_no},
+			#{prodInfo.shippingmethod},
+			#{prodInfo.shippingfeetype},
+			#{prodInfo.shippingfee},
+			#{prodInfo.additionalshippingfee},
+			#{prodInfo.shippingfeepaytype},
+			#{prodInfo.freeshippingamount},
+			#{prodInfo.returnshippingfee},
+			#{prodInfo.changeshippingfee},
+			#{prodInfo.salelimitcnt},
+			#{prodInfo.contents},
+			#{prodInfo.overseas_goods_sales_yn},
+			to_date(#{prodInfo.startdatedue},'YYYY-MM-DD HH24:MI:SS'),
+			to_date(#{prodInfo.enddatedue},'YYYY-MM-DD HH24:MI:SS'),
+			#{prodInfo.imgpatha},
+			#{prodInfo.imgpathb},
+			#{prodInfo.imgpathc},
+			now(),
+			'N'
+		)
+	</insert>
+	
+	<!-- 상품 단건 조회 / 상품 리스트 조회 -->
+	<select id="getProdInfoList" parameterType="com.melchi.external.module.prod.model.ProdInfo" resultType="com.melchi.external.module.prod.model.ProdInfo">
+		/* Prod.xml-getProdInfoList  */
+        SELECT * 
+        FROM MH_PRODUCT
+        WHERE 1=1
+      <if test="productcd != null and productcd != ''">
+       	AND PRODUCTCD = #{productcd}::NUMERIC
+	  </if>
+	  <if test="regdate != null and regdate != ''">
+       	AND TO_CHAR(REGDATE,'YYYY-MM-DD') = #{regdate}
+	  </if>
+	  
+    </select>
+    
+    <!-- 상품 옵션 조회 -->
+	<select id="getProdOptList" parameterType="com.melchi.external.module.prod.model.ProdOpt" resultType="com.melchi.external.module.prod.model.ProdOpt">
+		/* Prod.xml-getProdOptList  */
+        SELECT * FROM MH_PRODUCT_OPTS
+      <if test="productcd != null and productcd != ''">
+       	WHERE PRODUCTCD = #{productcd}::NUMERIC AND OPTIONGROUPNO = #{optiongroupno}::NUMERIC
+	  </if>
+    </select>
+    
+    <!-- 고시 정보 조회 -->
+	<select id="getProdNotiList" parameterType="com.melchi.external.module.prod.model.ProdNoti" resultType="com.melchi.external.module.prod.model.ProdNoti">
+		/* Prod.xml-getProdNotiList  */
+        SELECT * 
+        FROM MH_PRODUCT_NOTI
+        WHERE 1=1
+      <if test="productcd != null and productcd != ''">
+       	AND PRODUCTCD = #{productcd}::NUMERIC
+	  </if>
+    </select>
+    
+    <!-- 상품 옵션 코드 조회 -->
+	<select id="getProdOptCodeList" parameterType="com.melchi.external.module.prod.model.ProdOpt" resultType="com.melchi.external.module.prod.model.ProdOptReq">
+		/* Prod.xml-getProdOptList  */
+        SELECT productcd FROM MH_PRODUCT_OPTS
+       	WHERE PRODUCTCD = #{productcd}::NUMERIC
+       	GROUP BY PRODUCTCD
+    </select>
+    
+    <!-- 고시정보 코드 조회 -->
+	<select id="getProdNotiCodeList" parameterType="com.melchi.external.module.prod.model.ProdNoti" resultType="com.melchi.external.module.prod.model.ProdNotiReq">
+		/* Prod.xml-getProdNotiCodeList  */
+        SELECT productcd 
+        FROM MH_PRODUCT_NOTI
+       	WHERE PRODUCTCD = #{productcd}::NUMERIC
+       	GROUP BY PRODUCTCD
+    </select>
+    
+    <!-- 상품 존재 여부 체크 -->
+	<select id="getProdInfoCnt"  parameterType="com.melchi.external.module.prod.model.ProdInfo" resultType="int">
+		/* Prod.xml-getProdInfoCnt  */
+        SELECT COUNT(*)
+        FROM MH_PRODUCT
+        WHERE PRODUCTCD = #{productcd}::NUMERIC
+    </select>
+	
+	<!-- 배송지 번호  조회 -->
+	<select id="getShippolicyNoSelect"  parameterType="com.melchi.external.module.prod.model.ProdInfo" resultType="int">
+		/* Prod.xml-getShippolicyNoSelect  */
+        SELECT COUNT(*)
+        FROM MH_SHIPPINGPLACE
+        WHERE SHIPPOLICY_NO = #{prodInfo.shippolicy_no}
+    </select>
+    
+    <!-- 카테고리 번호  조회 -->
+	<select id="getCatecdSelect"  parameterType="com.melchi.external.module.prod.model.ProdInfo" resultType="int">
+		/* Prod.xml-getCatecdSelect  */
+        SELECT COUNT(*)
+        FROM MH_CATEGORIES
+        WHERE CATECD = #{prodInfo.catecd}
+    </select>
+	
+	<!-- 상품 수정 -->
+	<update id="setProdInfoUpdate" parameterType="com.melchi.external.module.prod.model.ProdInfo">
+		/* Prod.xml-setProdInfoUpdate */
+		UPDATE MH_PRODUCT 
+		SET
+			CATECD = #{prodInfo.catecd}::numeric, 
+			SELLERCD = #{prodInfo.sellercd}::numeric,
+			STATUS = #{prodInfo.status},
+			PRODUCTNAME = #{prodInfo.productname},
+			PRODUCTVIEWCD = #{prodInfo.productviewcd},
+			SELLERPRODUCTCD = #{prodInfo.sellerproductcd},
+			MANUFACNAME = #{prodInfo.manufacname},
+			ORIGINNAME = #{prodInfo.originname},
+			ISORIGINNAMEDETAILREF = #{prodInfo.isoriginnamedetailref},
+			BRANDNAME = #{prodInfo.brandname},
+			<if test="prodInfo.author != null and prodInfo.author != ''">
+			AUTHOR = #{prodInfo.author},
+			</if>
+			<if test="prodInfo.isbn != null and prodInfo.isbn != ''">
+			ISBN = #{prodInfo.isbn},
+			</if>
+			ISADULTAUTH = #{prodInfo.isadultauth}::numeric,
+			SALEDISPLAYTYPE = #{prodInfo.saledisplaytype},
+			ISTAXED = #{prodInfo.istaxed}::numeric,
+			<if test="prodInfo.healthsalespernum != null and prodInfo.healthsalespernum != ''">
+			HEALTHSALESPERNUM = #{prodInfo.healthsalespernum},
+			</if> 
+			<if test="prodInfo.medicalsalespernum != null and prodInfo.medicalsalespernum != ''">   
+			MEDICALSALESPERNUM = #{prodInfo.medicalsalespernum},
+			</if>
+			SELLINGPRICE = #{prodInfo.sellingprice}::numeric,
+			PRDQTY = #{prodInfo.prdqty}::numeric,
+			ISUSEDPRODUCTOPTION = #{prodInfo.isusedproductoption}::numeric,
+			SHIPPOLICY_NO = #{prodInfo.shippolicy_no}::numeric,
+			SHIPPINGMETHOD = #{prodInfo.shippingmethod},
+			SHIPPINGFEETYPE = #{prodInfo.shippingfeetype},
+			SHIPPINGFEE = #{prodInfo.shippingfee}::numeric,
+			ADDITIONALSHIPPINGFEE = #{prodInfo.additionalshippingfee}::numeric,
+			SHIPPINGFEEPAYTYPE = #{prodInfo.shippingfeepaytype},
+			FREESHIPPINGAMOUNT = #{prodInfo.freeshippingamount}::numeric,
+			RETURNSHIPPINGFEE = #{prodInfo.returnshippingfee}::numeric,
+			CHANGESHIPPINGFEE = #{prodInfo.changeshippingfee}::numeric,
+			SALELIMITCNT = #{prodInfo.salelimitcnt}::numeric,
+			CONTENTS = #{prodInfo.contents},
+			OVERSEAS_GOODS_SALES_YN = #{prodInfo.overseas_goods_sales_yn},
+			<if test="prodInfo.startdatedue != null and prodInfo.startdatedue != ''">   
+			STARTDATEDUE = to_date(#{prodInfo.startdatedue},'YYYY-MM-DD HH24:MI:SS'),
+			</if>
+			<if test="prodInfo.enddatedue != null and prodInfo.enddatedue != ''">   
+			ENDDATEDUE = to_date(#{prodInfo.enddatedue},'YYYY-MM-DD HH24:MI:SS'),
+			</if>
+			IMGPATHA = #{prodInfo.imgpatha},
+			<if test="prodInfo.imgpathb != null and prodInfo.imgpathb != ''">   
+			IMGPATHB = #{prodInfo.imgpathb},
+			</if>
+			<if test="prodInfo.imgpathc != null and prodInfo.imgpathc != ''">   
+			IMGPATHC = #{prodInfo.imgpathc},
+			</if>
+			<if test="prodInfo.brandcd != null and prodInfo.brandcd != ''">   
+			BRANDCD = #{prodInfo.brandcd}::numeric,
+			</if>
+			MODIFYDATE = now(),
+			APIINDEXING = 'U'
+<!-- 		WHERE  PRODUCTCD = #{prodInfo.productcd}::numeric AND CATECD = #{prodInfo.catecd}::numeric AND SELLERCD = #{prodInfo.sellercd}::numeric -->
+		WHERE  PRODUCTCD = #{prodInfo.productcd}::numeric
+	</update>
+	
+	<!-- 상품 부분 수정 -->
+	<update id="setProdInfoPartUpdate" parameterType="com.melchi.external.module.prod.model.ProdInfo">
+		/* Prod.xml-setProdInfoPartUpdate */
+		UPDATE MH_PRODUCT 
+		SET
+			STATUS = #{prodInfo.status},
+			SELLINGPRICE = #{prodInfo.sellingprice},
+			PRDQTY = #{prodInfo.prdqty},
+			STARTDATEDUE = to_date(#{prodInfo.startdatedue},'YYYY-MM-DD HH24:MI:SS'),
+			ENDDATEDUE = to_date(#{prodInfo.enddatedue},'YYYY-MM-DD HH24:MI:SS'),
+			MODIFYDATE = now(),
+			APIINDEXING = 'N'
+		WHERE  PRODUCTCD = #{prodInfo.productcd} AND CATECD = #{prodInfo.catecd} AND SELLERCD = #{prodInfo.sellercd}
+	</update>
+	
+	<!-- 상품 배송 부분 수정 -->
+	<update id="setProdInfoPartxUpdate" parameterType="com.melchi.external.module.prod.model.ProdInfo">
+		/* Prod.xml-setProdInfoPartUpdate */
+		UPDATE MH_PRODUCT 
+		SET
+			SHIPPOLICY_NO = #{prodInfo.shippolicy_no},
+			SHIPPINGMETHOD = #{prodInfo.shippingmethod},
+			SHIPPINGFEETYPE = #{prodInfo.shippingfeetype},
+			SHIPPINGFEE = #{prodInfo.shippingfee},
+			MODIFYDATE = now(),
+		WHERE  PRODUCTCD = #{prodInfo.productcd} AND CATECD = #{prodInfo.catecd} AND SELLERCD = #{prodInfo.sellercd}
+	</update>
+	
+	<!-- 상품 등록 번호 조회 -->
+	<select id="setProdInfoSelect"  resultType="long">
+		/* Prod.xml-setProdInfoSelect  */
+        SELECT MAX(PRODUCTCD)
+        FROM MH_PRODUCT
+    </select>
+	
+	
+	<!-- 상품 옵션 등록 -->
+	<insert id="setProdOptInsert" parameterType="com.melchi.external.module.prod.model.ProdOpt">
+	    /* Prod.xml-setProdOptInsert */
+		INSERT INTO MH_PRODUCT_OPTS (
+			PRODUCTCD,
+			OPTIONGROUPNO,
+			OPTIONGROUPNAME,
+			OPTIONITEM,
+			OPTIONITEMDETAIL,
+			OPTIONPRICE,
+			ISAVA,
+			OPTIONQTY,
+			REGDATE
+		) VALUES (
+			#{prodOpt.productcd},
+			#{prodOpt.optiongroupno},
+			#{prodOpt.optiongroupname},
+			#{prodOpt.optionitem},
+			#{prodOpt.optionitemdetail},
+			#{prodOpt.optionprice},
+			#{prodOpt.isava},
+			#{prodOpt.optionqty},
+			now()
+		)
+	</insert>
+	
+	<!-- 상품 고시 등록 -->
+	<insert id="setProdNotiInsert" parameterType="com.melchi.external.module.prod.model.ProdNoti">
+	    /* Prod.xml-setProdNotiInsert */
+		INSERT INTO MH_PRODUCT_NOTI (
+			PRODUCTCD,
+			ITEM,
+			CONTENTS,
+			ISAVA,
+			REGDATE
+		) VALUES (
+			#{prodNoti.productcd},
+			#{prodNoti.item},
+			#{prodNoti.contents},
+			#{prodNoti.isava},
+			now()
+		)
+	</insert>
+	
+	<!-- 상품 옵션 수정 -->
+	<update id="setProdOptUpdate" parameterType="com.melchi.external.module.prod.model.ProdOpt">
+		/* Prod.xml-setProdOptUpdate */
+		UPDATE MH_PRODUCT_OPTS 
+		SET
+			OPTIONGROUPNO = #{prodOpt.optiongroupno},
+			OPTIONGROUPNAME = #{prodOpt.optiongroupname},
+			OPTIONITEM = #{prodOpt.optionitem},
+			OPTIONITEMDETAIL = #{prodOpt.optionitemdetail},
+			OPTIONPRICE = #{prodOpt.optionprice},
+			ISAVA = #{prodOpt.isava},
+			OPTIONQTY = #{prodOpt.optionqty},
+			MODIFYDATE = now()
+		WHERE  PRODUCTOPTIONCD = #{prodOpt.productoptioncd} AND PRODUCTCD = #{prodOpt.productcd}
+	</update>		
+	
+	<!-- 고시 정보 수정 -->
+	<update id="setProdNotiUpdate" parameterType="com.melchi.external.module.prod.model.ProdNoti">
+		/* Prod.xml-setProdNotiUpdate */
+		UPDATE MH_PRODUCT_NOTI
+		SET
+			ITEM = #{prodNoti.item},
+			CONTENTS = #{prodNoti.contents},
+			ISAVA = #{prodNoti.isava}
+		WHERE  SEQ = #{prodNoti.seq}::NUMERIC AND PRODUCTCD = #{prodNoti.productcd}
+	</update>
+	
+	<!-- 상품 옵션 부분 수정 -->
+	<update id="setProdOptPartUpdate" parameterType="com.melchi.external.module.prod.model.ProdOpt">
+		/* Prod.xml-setProdOptPartUpdate */
+		UPDATE MH_PRODUCT_OPTS 
+		SET
+			ISAVA = #{prodOpt.isava},
+			OPTIONQTY= #{prodOpt.optionqty},
+			MODIFYDATE = now()
+		WHERE  PRODUCTOPTIONCD = #{prodOpt.productoptioncd} AND PRODUCTCD = #{prodOpt.productcd}
+	</update>		
+	
+	<!-- 상품 옵션 조회 -->
+	<select id="getOptioncdSelect"  parameterType="com.melchi.external.module.prod.model.ProdOpt" resultType="int">
+		/* Prod.xml-getOptioncdSelect  */
+        SELECT COUNT(*)
+        FROM MH_PRODUCT_OPTS
+        WHERE PRODUCTCD = #{prodOpt.productcd} AND OPTIONITEM = #{prodOpt.optionitem} AND OPTIONITEMDETAIL = #{prodOpt.optionitemdetail} 
+    </select>
+    
+    <!-- 고시 정보 조회 -->
+	<select id="getNoticdSelect"  parameterType="com.melchi.external.module.prod.model.ProdNoti" resultType="int">
+		/* Prod.xml-getNoticdSelect  */
+        SELECT COUNT(*)
+        FROM MH_PRODUCT_NOTI
+        WHERE PRODUCTCD = #{prodNoti.productcd} AND ITEM = #{prodNoti.item}
+    </select>
+	
+	<!-- 상품 옵션 등록 번호 조회 -->
+	<select id="setProdOptSelect"  resultType="long">
+		/* Prod.xml-setProdOptSelect  */
+        SELECT MAX(PRODUCTOPTIONCD)
+        FROM MH_PRODUCT_OPTS
+    </select>
+	
+	<!-- 배송지등록 -->
+	<insert id="setShippingInsert" parameterType="com.melchi.external.module.prod.model.ShippingInfo">
+		/* Prod.xml-setShippingInsert */
+        INSERT INTO MH_SHIPPINGPLACE	
+         (
+            SELLERCD            /* 판매자 코드            */
+          , SHIPPOLICY_NM       /* 배송지 명              */
+          , POSTCODE1           /* 출고지 우편번호1       */
+          , POSTCODE2           /* 출고지 우편번호2       */
+          , ADDRESS1            /* 출고지 주소            */
+          , ADDRESS2            /* 출고지 상세주소        */
+          , RNADDRESS1          /* 출고지 도로명 주소     */
+          , RNADDRESS2          /* 출고지 도로명 상세주소 */
+          , RETURNPOSTCODE1     /* 반품주소지우편번호1    */
+          , RETURNPOSTCODE2     /* 반품주소지우편번호2    */
+          , RETURNADDRESS1      /* 반품지 지번주소        */
+          , RETURNADDRESS2      /* 반품지 지번 상세주소   */
+          , RNRETURNADDRESS1    /* 반품지 도로명 주소     */
+          , RNRETURNADDRESS2    /* 반품지 도로명 상세주소 */
+          , USEYN               /* 사용여부               */
+          , REGDATE             /* 등록일                 */
+          , MODIFYDATE          /* 수정일                 */
+          , APIINDEXING         /* 멸치쇼핑 이관여부      */
+          , INDEXINGDATE        /* 최종 수정일            */
+          , SHIPPINGCOMPANYCODE /* 택배사코드             */
+         ) VALUES (
+            #{sellercd}::NUMERIC
+          , #{shippolicyNm}
+          , #{postcode1}
+          , #{postcode2}
+          , #{address1}
+          , #{address2}
+          , #{rnaddress1}
+          , #{rnaddress2}
+          , #{returnpostcode1}
+          , #{returnpostcode2}
+          , #{returnaddress1}
+          , #{returnaddress2}
+          , #{rnreturnaddress1}
+          , #{rnreturnaddress2}
+          , #{useyn}
+          , NOW() 
+          , NOW()
+          , 'N'
+          , NOW()
+          , #{shippingcompanycode}
+         )		
+	</insert>
+	
+	<!-- 상품 등록 번호조회 -->
+	<select id="getMaxShippolicyNo"  parameterType="com.melchi.external.module.prod.model.ShippingInfo" resultType="String">
+		/* Prod.xml-getMaxShippolicyNo  */
+       SELECT MAX(SHIPPOLICY_NO) 
+         FROM MH_SHIPPINGPLACE
+    </select>	
+	
+	<!-- 배송지수정 -->
+	<update id="setShippingUpdate" parameterType="com.melchi.external.module.prod.model.ShippingInfo">
+		/* Prod.xml-setShippingUpdate */
+        UPDATE MH_SHIPPINGPLACE
+           SET SHIPPOLICY_NM    = #{shippolicyNm}     /* 배송지 명              */
+             , POSTCODE1        = #{postcode1}        /* 출고지 우편번호1       */
+             
+             <if test="postcode2 != null and postcode2 != ''">
+             , POSTCODE2        = #{postcode2}        /* 출고지 우편번호2       */
+             </if>
+             <if test="address1 != null and address1 != ''">
+             , ADDRESS1         = #{address1}         /* 출고지 주소            */
+             </if>
+             <if test="address2 != null and address2 != ''">
+             , ADDRESS2         = #{address2}         /* 출고지 상세주소        */
+             </if>
+             
+             , RNADDRESS1       = #{rnaddress1}       /* 출고지 도로명 주소     */
+             , RNADDRESS2       = #{rnaddress2}       /* 출고지 도로명 상세주소 */
+             , RETURNPOSTCODE1  = #{returnpostcode1}  /* 반품주소지우편번호1    */
+             
+             <if test="postcode2 != null and postcode2 != ''">
+             , RETURNPOSTCODE2  = #{returnpostcode2}  /* 반품주소지우편번호2    */
+             </if>
+             <if test="returnaddress1 != null and returnaddress1 != ''">
+             , RETURNADDRESS1   = #{returnaddress1}   /* 반품지 지번주소        */
+             </if>
+             <if test="returnaddress2 != null and returnaddress2 != ''">
+             , RETURNADDRESS2   = #{returnaddress2}   /* 반품지 지번 상세주소   */
+             </if>
+             
+             , RNRETURNADDRESS1 = #{rnreturnaddress1} /* 반품지 도로명 주소     */
+             , RNRETURNADDRESS2 = #{rnreturnaddress2} /* 반품지 도로명 상세주소 */
+             
+             <if test="useyn != null and useyn != ''">
+             , USEYN            = #{useyn}            /* 사용여부               */
+             </if>
+             
+             , MODIFYDATE       = NOW()       /* 수정일                 */
+             
+             <if test="apiindexing != null and apiindexing != ''">
+             , APIINDEXING      = #{apiindexing}      /* 멸치쇼핑 이관여부      */
+             </if>
+             
+             , INDEXINGDATE     = NOW()     /* 최종 수정일           */
+             
+             <if test="shippingcompanycode != null and shippingcompanycode != ''">
+             , SHIPPINGCOMPANYCODE = #{shippingcompanycode}::NUMERIC /* 택배사코드      */
+             </if>             
+             
+         WHERE SELLERCD      = #{sellercd}::NUMERIC     /* 판매자 코드  */ 
+           
+           <if test="shippolicyNo != null and shippolicyNo != ''">
+           AND SHIPPOLICY_NO = #{shippolicyNo}::NUMERIC /* 배송지 */
+           </if>
+           
+	</update>
+	
+	<!-- 배송지조회 --> 
+	<select id="getShipping" parameterType="com.melchi.external.module.prod.model.ShippingInfo" resultType="hashMap">
+		/* Prod.xml-getShipping */
+        SELECT SELLERCD            /* 판매자 코드            */
+             , SHIPPOLICY_NO       /* 배송지                 */
+             , SHIPPOLICY_NM       /* 배송지 명              */
+             , POSTCODE1           /* 출고지 우편번호1       */
+             , POSTCODE2           /* 출고지 우편번호2       */
+             , ADDRESS1            /* 출고지 주소            */
+             , ADDRESS2            /* 출고지 상세주소        */
+             , RNADDRESS1          /* 출고지 도로명 주소     */
+             , RNADDRESS2          /* 출고지 도로명 상세주소 */
+             , RETURNPOSTCODE1     /* 반품주소지우편번호1    */
+             , RETURNPOSTCODE2     /* 반품주소지우편번호2    */
+             , RETURNADDRESS1      /* 반품지 지번주소        */
+             , RETURNADDRESS2      /* 반품지 지번 상세주소   */
+             , RNRETURNADDRESS1    /* 반품지 도로명 주소     */
+             , RNRETURNADDRESS2    /* 반품지 도로명 상세주소 */
+             , SHIPPINGCOMPANYCODE /* 택배사코드 */
+          FROM MH_SHIPPINGPLACE 
+         WHERE SELLERCD = #{sellercd}::NUMERIC     /* 판매자 코드  */ 
+
+           <if test="shippolicyNo != null and shippolicyNo != ''">
+           AND SHIPPOLICY_NO = #{shippolicyNo}::NUMERIC /* 배송지 */
+           </if>
+	  
+    </select>	
+	
+	<!-- 카테고리조회 -->
+	<select id="getCategories" parameterType="com.melchi.external.module.prod.model.CategoriesInfo" resultType="java.util.Map">
+		/* Prod.xml-selectCategories  */
+        SELECT CATECD       AS catecd        /* 카테고리 코드     */
+             , REFCATECD    AS refcatecd     /* 부모카테고리      */
+             , CATEGORYNAME AS categoryname  /* 카테고리명        */
+             , STEP         AS step          /* 카테고리 단계     */
+             , SORTNO       AS sortno        /* 화면표시순서      */
+             , DATEREG      AS datereg       /* 등록일자          */
+             , CATECD1      AS catecd1       /* 1차 카테고리 코드 */
+             , CATECD2      AS catecd2       /* 2차 카테고리 코드 */
+             , CATECD3      AS catecd3       /* 3차 카테고리 코드 */
+             , CATECD4      AS catecd4       /* 4차 카테고리 코드 */
+             , FULL_CATECD  AS fullCatecd    /* 카테고리전체      */
+             , CATENM1      AS catenm1       /* 1차 카테고리 명   */
+             , CATENM2      AS catenm2       /* 2차 카테고리 명   */
+             , CATENM3      AS catenm3       /* 3차 카테고리 명   */
+             , CATENM4      AS catenm4       /* 4차 카테고리 명   */
+             , FULL_SORTNO  AS fullSortno    /*                   */
+        FROM MH_CATEGORIES
+        
+      <if test="catecd != null and catecd != ''">
+       	WHERE CATECD = #{catecd}::NUMERIC
+	  </if>
+    </select>
+    
+	<!-- 주문조회 -->
+	<select id="getOrderList" parameterType="com.melchi.external.module.prod.model.ProdReq" resultType="com.melchi.external.module.prod.model.OrderInfo">
+		/* Prod.xml-getOrderList  */
+        SELECT A.ORDERCD                 AS ordercd                 /* 주문코드                 */ 
+             , A.USERCD                  AS usercd                  /* 판매자 코드              */
+             , A.AMOUNT                  AS amount                  /* 주문금액                 */
+             , A.SHIPAMOUNT              AS shipamount              /* 배송비총액               */
+             , A.DISCOUNTAMOUNT          AS discountamount          /* 할인총액                 */
+             , A.USEDSHOPPINGPOINTAMOUNT AS usedshoppingpointamount /* 사용한쇼핑포인트금액     */
+             , A.USEDANCHOVYPOINTAMOUNT  AS usedanchovypointamount  /* 사용한멸치포인트금액     */
+             , A.USEDEMONEYAMOUNT        AS usedemoneyamount        /* 사용한이머니금액         */
+             , A.RECVPERSON              AS recvperson              /* 받는사람 이름            */
+             , A.RECVTEL                 AS recvtel                 /* 받는사람 연락처          */
+             , A.RECVHP                  AS recvhp                  /* 받는사람 핸드폰 번호     */
+             , A.RECVPOSTCODE1           AS recvpostcode1           /* 받는사람 우편번호1       */
+             , A.RECVPOSTCODE2           AS recvpostcode2           /* 받는사람 우편번호2       */
+             , A.RECVADDRESS1            AS recvaddress1            /* 받는사람 지번주소        */
+             , A.RECVADDRESS2            AS recvaddress2            /* 받는사람 지번 상세주소   */
+             , A.RECVRNADDRESS1          AS recvrnaddress1          /* 받는사람 도로명주소      */
+             , A.RECVRNADDRESS2          AS recvrnaddress2          /* 받는사람 도로명 상세주소 */
+             , A.RECVMESSAGE             AS recvmessage             /* 배송 메세지              */
+             , A.ORDERDATE               AS orderdate               /* 주문일자                 */
+             , A.PAYMENTTYPE             AS paymenttype             /* 결제방식                 */
+             , A.CARDTYPE                AS cardtype                /* 카드종류                 */
+             , A.INTERESTCHARGEPERIOD    AS interestchargeperiod    /* 할부기간                 */
+             , A.BANKTYPE                AS banktype                /* 은행종류                 */
+             , A.DEPOSITOR               AS depositor               /* 입금자명                 */
+             , A.DEPOSITDEADLINE         AS depositdeadline         /* 입금기한                 */
+             , A.REFUNDDATE              AS refunddate              /* 결제취소처리일자         */
+             , A.REFUNDAMOUNT1           AS refundamount1           /* 신용카드취소금액         */
+             , A.REFUNDAMOUNT2           AS refundamount2           /* 가상계좌취소금액         */
+             , A.REFUNDAMOUNT3           AS refundamount3           /* 이머니취소금액           */
+             , A.REFUNDAMOUNT4           AS refundamount4           /* 멸치포인트취소금액       */
+             , A.REFUNDAMOUNT5           AS refundamount5           /* 쇼핑포인트취소금액       */
+             , A.REFUNDACCOUNTCD         AS refundaccountcd         /* 결제취소처리자           */
+             , A.ORDERCHANNEL            AS orderchannel            /* 주문채널                 */
+             , A.REFUNDBANKCD            AS refundbankcd            /* 환불은행명               */
+             , A.REFUNDACCOUNTNUM        AS refundaccountnum        /* 환불계좌번호             */
+             , A.REFUNDDEPOSITOR         AS refunddepositor         /* 환불계좌예금주           */
+             , A.OUTSIDEPOST             AS outsidepost             /* 도서산간 배송 여부       */
+             , A.REGDATE                 AS regdate                 /* 등록일시(결제일시)       */
+             , A.MODIFYDATE              AS modifydate              /* 수정일시                 */
+        FROM MH_ORDERS A
+        
+       	<if test="status != null and status != ''">
+        INNER JOIN MH_ORDER_DETAILS B /* 주문상세 */
+           ON A.ORDERCD = B.ORDERCD
+          AND B.STATUS  = #{status}
+        </if>
+         
+       WHERE 1 = 1               
+
+       	 <if test="orderdateStart != null and orderdateStart != ''">
+         AND A.REGDATE BETWEEN #{orderdateStart}::DATE AND #{orderdateEnd}::DATE
+         </if>       	 
+       	 <if test="ordercd != null and ordercd != ''">
+         AND A.ORDERCD = #{ordercd}
+         </if>
+         
+    </select>
+    
+	<!-- 주문상세조회 -->
+	<select id="getOrderDetail" parameterType="com.melchi.external.module.prod.model.ProdReq" resultType="com.melchi.external.module.prod.model.OrderDetailInfo">
+		/* Prod.xml-getOrderDetail  */
+        SELECT ORDERCD                    AS ordercd                   /* 주문코드            */
+             , PRODUCTCD                  AS productcd                 /* 상품 코드           */
+             , SELLINGPRICE               AS sellingprice              /* 주문 금액           */
+             , SUPPLYPRICE                AS supplyprice               /* 배송비총액          */
+             , QTY                        AS qty                       /* 주문수량            */
+             , AMOUNT                     AS amount                    /* 상품 판매가         */
+             , SHIPFINISHEDDATE           AS shipfinisheddate          /* 배송 완료일         */
+             , SHIPPINGNO                 AS shippingno                /* 운송장 번호         */
+             , DELICOMCD                  AS delicomcd                 /* 택배사 코드         */
+             , SHIPPINGFEETYPE            AS shippingfeetype           /* 배송비방식          */
+             , SHIPPINGFEE                AS shippingfee               /* 배송비              */
+             , SHIPPINGMETHOD             AS shippingmethod            /* 배송방법            */
+             , SHIPPINGPERSONTEL          AS shippingpersontel         /* 배송기사연락처      */
+             , SHIPPINGFEEPAYTYPE         AS shippingfeepaytype        /* 배송비결제방식      */
+             , CHARGEDSHIPPINGFEE         AS chargedshippingfee        /* 부과된배송비        */
+             , IMPORT_CLEARANCE_ORDERDER1 AS importClearanceOrderder1  /* 개인통관번호        */
+             , IMPORT_CLEARANCE_ORDERDER2 AS importClearanceOrderder2  /* 수입통관 주문자 정보*/
+             , INT_DELIV_YN               AS intDelivYn                /* 국제배송 여부       */
+             , INT_DELIV_STAT_CD          AS intDelivStatCd            /* 국제배송 상태코드   */
+             , ADDITIONALSHIPPINGFEE      AS additionalshippingfee     /* 도서산간 추가 배송비*/
+             , STATUS                     AS status                    /* 주문상태 값         */
+             , REGDATE                    AS regdate                   /* 등록일시(결제일시)  */
+             , MODIFYDATE                 AS modifydate                /* 수정일시            */
+        FROM MH_ORDER_DETAILS	
+       WHERE ORDERCD = #{ordercd}
+       
+       	 <if test="status != null and status != ''">
+         AND STATUS  = #{status}
+         </if>
+         
+    </select>
+    
+	<!-- 주문옵션조회 -->
+	<select id="getOrderDeOpts" resultType="com.melchi.external.module.prod.model.OptionInfo">
+		/* Prod.xml-getOrderDeOpts */
+        SELECT A.ORDERCD          AS ordercd         /* 주문코드           */
+             , A.PRODUCTCD        AS productcd       /* 상품 코드          */
+             , A.OPTIONSEQ        AS optionseq       /* 옵션그룹핑일련번호 */
+             , A.OPTIONPRICE      AS optionprice     /* 추가금액           */
+             , A.QTY              AS qty             /* 주문수량           */
+             , A.OPTIONITEM       AS optionitem      /* 선택옵션           */
+             , A.PRODUCTOPTIONCD  AS productoptioncd /* 옵션코드            */
+          FROM MH_ORDER_DE_OPTS A /* 주문옵션 */
+         /* 
+         INNER JOIN MH_PRODUCT_OPTS B /* 상품옵션 */
+            ON A.PRODUCTCD       = B.PRODUCTCD
+           AND A.PRODUCTOPTIONCD = B.PRODUCTOPTIONCD
+           AND A.OPTIONSEQ       = B.OPTIONGROUPNO
+         */
+         WHERE A.ORDERCD   = #{ordercd}
+           AND A.PRODUCTCD = #{productcd}::NUMERIC
+    </select>    
+
+	<!-- 주문상세수정 -->
+	<update id="setOrderDeUpdate" parameterType="com.melchi.external.module.prod.model.ProdReq">
+		/* Prod.xml-setOrderDeUpdate */
+        UPDATE MH_ORDER_DETAILS
+           SET MODIFYDATE   = NOW()       /* 수정일 */
+         	 , INDEXINGDATE = NOW()       /* 최종 수정일 */
+         	 , APIINDEXING = 'N'
+         	 , STATUS = #{status}         /* 주문상태 값 */
+
+         	 <if test="shippingno != null and shippingno != ''">
+         	 , SHIPPINGNO = #{shippingno} /* 운송장 번호 */
+         	 </if>
+         	 <if test="delicomcd != null and delicomcd != ''">
+         	 , DELICOMCD = #{delicomcd}   /* 택배사 코드 */
+         	 </if>
+         	 <if test="cancelReason != null and cancelReason != ''">
+         	 , CANCEL_REASON = #{cancelReason}   /* 취소사유 */
+         	 </if>
+         	 
+         	 
+         WHERE ORDERCD = #{ordercd} /* 주문코드  */          
+           AND PRODUCTCD = #{productcd}::NUMERIC /* 상품 코드 */
+	</update>
+	
+
+    <!-- 상품 주문 문의 목록 조회 -->
+    <select id="getQnaProductList" resultType="com.melchi.external.module.prod.model.QnaProdInfo">  
+    /* Prod.xml-getQnaProductList */
+    SELECT seq                        /* 문의번호    */
+         , subject                    /* QnA 제목    */
+         , contents                   /* 질문 내용   */
+         , regdate                    /* 등록일      */ 
+         , writername                 /* 작성자명    */
+         , writetel                   /* 작성자연락처*/
+         , productcd                  /* 상품코드    */
+         , email                      /* 이메일      */
+         , qna_typ                    /* 문의 유형   */
+         , ordercd                    /* 주문코드    */
+         , answeryn                   /* 답변여부    */
+      FROM MH_QNA_PRODUCTS_QUESTION   /* 상품/주문 문의 */
+     WHERE regdate BETWEEN TO_DATE(#{startDate}, 'YYYYMMDD') AND TO_DATE(#{endDate}, 'YYYYMMDD')
+     ORDER BY SEQ   
+    </select>  
+
+
+   
+    <insert id="setQnaProductInsert" parameterType="com.melchi.external.module.prod.model.QnaProdInfo">
+    /* Prod.xml-setQnaProductInsert */
+    INSERT INTO MH_QNA_PRODUCTS_QUESTION   /* 상품/주문 문의 */
+    (
+       seq                        /* 문의번호    */
+     , subject                    /* QnA 제목    */
+     , contents                   /* 질문 내용   */
+     , regdate                    /* 등록일      */
+     , writername                 /* 작성자명    */
+     , writetel                   /* 작성자연락처*/
+     , productcd                  /* 상품코드    */
+     , email                      /* 이메일      */
+     , qna_typ                    /* 문의 유형   */
+     , ordercd                    /* 주문코드    */
+     , answeryn                   /* 답변여부    */
+    ) VALUES (
+      #{seq}::NUMERIC
+    , #{subject}   
+    , #{contents}
+    , TO_DATE(#{regdate}, 'YYYYMMDD')
+    , #{writername}  
+    , #{writetel}    
+    , #{productcd}::NUMERIC
+    , #{email}
+    , #{qnaTyp}   
+    , #{ordercd}
+    , 'N'
+    )    
+    </insert>   
+
+    <!-- 상품/주문 문의 수정 -->       
+    <update id="setQnaProductUpdate" parameterType="com.melchi.external.module.prod.model.QnaProdInfo">
+    /* Prod.xml-setQnaProductUpdate */
+    UPDATE MH_QNA_PRODUCTS_QUESTION   /* 상품/주문 문의 */
+       SET subject    = #{subject}                /* QnA 제목    */   
+         , contents   = #{contents}                /* 질문 내용   */            
+         , writername = #{writername}                /* 작성자명    */   
+         , writetel   = #{writetel}               /* 작성자연락처*/   
+         , productcd  = #{productcd}::NUMERIC                /* 상품코드    */   
+         , email      = #{email}                /* 이메일      */     
+         , qna_typ    = #{qnaTyp}                /* 문의 유형   */   
+         , ordercd    = #{ordercd}                /* 주문코드    */   
+         , answeryn   = #{answeryn}                /* 답변여부    */   
+     WHERE seq = #{seq}::NUMERIC   /* 문의번호    */               
+    </update>       
+    
+	<!-- 상품/주문 답변 리스트 -->
+	<select id="getQnaAnswerList" parameterType="com.melchi.external.module.prod.model.QnaAnswerInfo" resultType="com.melchi.external.module.prod.model.QnaAnswerInfo">
+		/* Prod.xml-getQnaAnswerList  */
+        SELECT SEQ                     AS seq                 /* 답변번호              */ 
+             , SUBJECT                 AS subject             /* 답변 제목             */
+             , CONTENTS                AS contents            /* 답변 내용             */
+             , REGDATE                 AS regdate             /* 등록일               */
+             , WRITERTYPE              AS writertype          /* 작성자명              */
+             , WRITERID                AS writerid            /* 작성자연락처            */
+             , PARENTSEQ               AS parentseq           /* 문의게시판코드           */
+        FROM MH_QNA_PRODUCTS_ANSWER
+    </select>
+	
+	<!-- 상품/주문 답변 번호 조회 -->
+	<select id="getQnaAnswerSelect"  resultType="long">
+		/* Prod.xml-getQnaAnswerSelect  */
+        SELECT
+        	MAX(SEQ)
+        FROM MH_QNA_PRODUCTS_ANSWER
+    </select>
+    
+	<!-- 상품/주문 답변 등록 -->
+	<insert id="setQnaAnswerInsert" parameterType="com.melchi.external.module.prod.model.QnaAnswerInfo">
+		/* Prod.xml-setQnaAnswerInsert */
+		INSERT INTO MH_QNA_PRODUCTS_ANSWER (
+			SUBJECT,
+			CONTENTS,
+			REGDATE,
+			WRITERTYPE,
+			WRITERID,
+			PARENTSEQ
+		) VALUES (
+			#{qnaAnswerInfo.subject},
+			#{qnaAnswerInfo.contents},
+			now(),
+			#{qnaAnswerInfo.writertype},
+			#{qnaAnswerInfo.writerid},
+			#{qnaAnswerInfo.parentseq}
+		)
+	</insert>
+	
+	<!-- 상품/주문 답변 수정 -->
+	<update id="setQnaAnswerUpdate" parameterType="com.melchi.external.module.prod.model.QnaAnswerInfo">
+		/* Prod.xml-setQnaAnswerUpdate */
+		UPDATE MH_QNA_PRODUCTS_ANSWER 
+		SET
+			SUBJECT = #{qnaAnswerInfo.subject},
+			CONTENTS = #{qnaAnswerInfo.contents},
+			WRITERTYPE = #{qnaAnswerInfo.writertype},
+			WRITERID = #{qnaAnswerInfo.writerid}
+		WHERE SEQ = #{qnaAnswerInfo.seq}::NUMERIC
+	</update>
+ 
+    	 
+	
+</mapper>
+

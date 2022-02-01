@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+	
+	
+	<bean id="statisticBiz" class="com.skplanet.ble.module.statistic.biz.StatisticBiz" ></bean>
+	
+	<bean id="quartzBconLogJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="statisticBiz" />
+		<property name="targetMethod" value="makeBconLogFile" />
+	</bean>
+	<bean id="quartzBtZoneOneLogJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="statisticBiz" />
+		<property name="targetMethod" value="makeBtZoneOneLogFile" />
+	</bean>
+	<bean id="quartzBtZoneTwoLogJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="statisticBiz" />
+		<property name="targetMethod" value="makeBtZoneTwoLogFile" />
+	</bean>
+    <bean id="quartzBleInfoJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="statisticBiz" />
+        <property name="targetMethod" value="makeBleInfoFile" />
+    </bean>
+
+
+	<bean id="bconLogTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="quartzBconLogJob" />
+		<property name="cronExpression" value="#{config['quartz.bcon.cron.expression']}" />
+	</bean>
+	<bean id="btZoneOneLogTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="quartzBtZoneOneLogJob" />
+		<property name="cronExpression" value="#{config['quartz.btzone.one.cron.expression']}" />
+	</bean>
+	<bean id="btZoneTwoLogTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="quartzBtZoneTwoLogJob" />
+		<property name="cronExpression" value="#{config['quartz.btzone.two.cron.expression']}" />
+	</bean>
+    <bean id="bleInfoTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="quartzBleInfoJob" />
+        <property name="cronExpression" value="#{config['quartz.ble.info.cron.expression']}" />
+    </bean>
+
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="bconLogTrigger" />
+				<ref bean="btZoneOneLogTrigger" />
+				<ref bean="btZoneTwoLogTrigger" />
+                <ref bean="bleInfoTrigger" />
+			</list>
+		</property>
+		<property name="quartzProperties">
+			<props>
+				<prop key="org.quartz.threadPool.class">org.quartz.simpl.SimpleThreadPool</prop>
+				<prop key="org.quartz.threadPool.threadCount">3</prop>
+				<prop key="org.quartz.threadPool.threadPriority">4</prop>
+				<prop key="org.quartz.jobStore.class">org.quartz.simpl.RAMJobStore</prop>
+				<prop key="org.quartz.jobStore.misfireThreshold">60000</prop>
+			</props>
+		</property>
+	</bean>
+	
+</beans>
