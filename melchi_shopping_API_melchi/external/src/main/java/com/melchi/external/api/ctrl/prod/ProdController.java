@@ -49,7 +49,8 @@ public class ProdController extends BaseController {
 	private Header header;
 	
 	/**
-	 * 상품 등록3
+	 * 상품 등록30
+	 * 상품 등록30
 	 * @param prodInfo
 	 * @return rtnMsg
 	 * @throws Exception
