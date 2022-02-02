@@ -20,7 +20,7 @@ import com.melchi.external.module.prod.model.ShippingInfo;
 
 public interface ProdService {
 
-	//상품 등록 
+	//상품 등록  
 	public void setProdInfoInsert(ProdInfo prodInfo) throws Exception;
 	
 	//상품 단건 조회 
