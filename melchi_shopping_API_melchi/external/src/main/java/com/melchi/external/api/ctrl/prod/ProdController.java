@@ -75,7 +75,7 @@ public class ProdController extends BaseController {
 	}
 	
 	/**
-	 * 상품 단건 조회0
+	 * 상품 단건 조회4
 	 * @param prodInfo
 	 * @return rtnMsg
 	 * @throws Exception
