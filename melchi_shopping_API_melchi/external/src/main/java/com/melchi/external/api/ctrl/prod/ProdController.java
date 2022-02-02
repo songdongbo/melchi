@@ -50,6 +50,7 @@ public class ProdController extends BaseController {
 	
 	/**
 	 * 상품 등록31
+	 * 상품 등록30
 	 * @param prodInfo0
 	 * @return rtnMsg0
 	 * @throws Exception0
