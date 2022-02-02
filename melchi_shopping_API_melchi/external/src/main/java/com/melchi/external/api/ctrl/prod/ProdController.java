@@ -49,10 +49,10 @@ public class ProdController extends BaseController {
 	private Header header;
 	
 	/**
-	 * 상품 등록3
-	 * @param prodInfo
-	 * @return rtnMsg
-	 * @throws Exception
+	 * 상품 등록31
+	 * @param prodInfo0
+	 * @return rtnMsg0
+	 * @throws Exception0
 	 */
 	@RequestMapping(value="/setProdInfoInsert", method = {RequestMethod.POST})
 	@ResponseBody
