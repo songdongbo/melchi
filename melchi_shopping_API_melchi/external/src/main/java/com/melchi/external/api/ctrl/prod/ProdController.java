@@ -51,8 +51,8 @@ public class ProdController extends BaseController {
 	/**
 	 * 상품 등록31
 	 * 상품 등록30
-	 * @param prodInfo0
-	 * @return rtnMsg0
+	 * @param prodInfo01
+	 * @return rtnMsg01
 	 * @throws Exception0
 	 */
 	@RequestMapping(value="/setProdInfoInsert", method = {RequestMethod.POST})
