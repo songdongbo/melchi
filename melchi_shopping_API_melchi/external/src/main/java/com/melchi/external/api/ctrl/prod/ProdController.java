@@ -314,7 +314,7 @@ public class ProdController extends BaseController {
 	}
 	
 	/**
-	 * 배송지등록_송동보_33
+	 * 배송지등록
 	 * @param  ShippingInfo
 	 * @return result
 	 * @throws Exception
