@@ -328,7 +328,7 @@ public class ProdController extends BaseController {
     	String validFlid[] = {"sellercd","postcode1","rnaddress1","rnaddress2","returnpostcode1","returnpostcode1","rnreturnaddress2"};
 		pVali.nullChk(shippingInfo, validFlid);
 		
-		if(!pVali.isAccurate()) {
+		if(!pVali.isAccurate()) { 
 			//return new Response(new ResponseTemplate(pVali.getErrorCode(), pVali.getErrorMessage()));
 			return new Response(new BleApiException(Code.INVALID_ERROR, Code.INVALID_ERROR_MSG));
 		}				
